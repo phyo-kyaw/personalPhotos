@@ -2,6 +2,8 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.2</TargetFramework>
+    <NoWin32Manifest>true</NoWin32Manifest>
+    <UserSecretsId>976e436c-356b-4472-90fa-ca0244516459</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
@@ -10,6 +12,7 @@
     <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Session" Version="2.2.0" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="3.0.0-preview5.19227.9" />
+    <PackageReference Include="Microsoft.NET.Sdk.Razor" Version="2.2.0" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.2.3" />
     <PackageReference Include="Microsoft.Windows.Compatibility" Version="3.0.0-preview5.19224.8" />
     <PackageReference Include="System.Data.SqlClient" Version="4.7.0-preview5.19224.8" />

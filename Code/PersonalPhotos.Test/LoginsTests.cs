@@ -1,25 +1,24 @@
-using PersonalPhotos.Controllers;
-using Xunit;
-using Moq;
 using Core.Interfaces;
+using Core.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Moq;
+using PersonalPhotos.Controllers;
 using PersonalPhotos.Models;
+using System;
 using System.Threading.Tasks;
-using Core.Models;
+using Xunit;
 
 namespace PersonalPhotos.Test
 {
     public class LoginsTests
     {
-        private readonly LoginsController _controller;
+        private readonly LoginsController _loginsController;
         private readonly Mock<ILogins> _logins;
         private readonly Mock<IHttpContextAccessor> _accessor;
-
         public LoginsTests()
         {
             _logins = new Mock<ILogins>();
-            
 
             var session = Mock.Of<ISession>();
             var httpContext = Mock.Of<HttpContext>(x => x.Session == session);
@@ -27,24 +26,29 @@ namespace PersonalPhotos.Test
             _accessor = new Mock<IHttpContextAccessor>();
             _accessor.Setup(x => x.HttpContext).Returns(httpContext);
 
-            _controller = new LoginsController(_logins.Object, _accessor.Object);
+            _loginsController = new LoginsController(_logins.Object, _accessor.Object);
         }
 
         [Fact]
-        public void Index_GivenNorReturnUrl_ReturnLoginView()
+        public void Index_GivenNotReturnUrl_ReturnLoginView()
         {
-            var result = (_controller.Index() as ViewResult);
+            var result = _loginsController.Index();
 
-            Assert.NotNull(result);
-            Assert.Equal("Login", result.ViewName, ignoreCase: true);
+            Assert.IsAssignableFrom<IActionResult>(result);
+            Assert.IsType<ViewResult>(result);
+
+            var result1 = ( _loginsController.Index()  as ViewResult);
+            Assert.NotNull(result1);
+            Assert.Equal("login", result1.ViewName, ignoreCase: true);
+
         }
 
         [Fact]
-        public async Task Login_GivenModelStateInvalid_ReturnLoginView()
+        public async Task Login_GivenModelStageInvalid_ReturnLoginView()
         {
-            _controller.ModelState.AddModelError("Test", "Test");
+            _loginsController.ModelState.AddModelError("Test", "Test");
 
-            var result = await _controller.Login(Mock.Of<LoginViewModel>()) as ViewResult;
+            var result = await _loginsController.Login(Mock.Of<LoginViewModel>()) as ViewResult;
             Assert.Equal("Login", result.ViewName, ignoreCase: true);
         }
 
@@ -52,14 +56,16 @@ namespace PersonalPhotos.Test
         public async Task Login_GivenCorrectPassword_RedirectToDisplayAction()
         {
             const string password = "123";
-            var modelView = Mock.Of<LoginViewModel>(x=> x.Email == "a@b.com" && x.Password== password);
-            var model = Mock.Of<User>(x=> x.Password == password);
+            var modelView = Mock.Of<LoginViewModel>(x => x.Email == "a@b.com" && x.Password == password);
+            var model = Mock.Of<User>(x => x.Password == password);
 
             _logins.Setup(x => x.GetUser(It.IsAny<string>())).ReturnsAsync(model);
-
-            var result = await _controller.Login(modelView);
+            var result = await _loginsController.Login(modelView);
 
             Assert.IsType<RedirectToActionResult>(result);
+            //Assert.Equal("display", result.ToString(), ignoreCase: true);
+
         }
+
     }
 }
